@@ -1,0 +1,25 @@
+{
+    "name": "zgphp/ircbot",
+    "type": "library",
+    "description": "Support bot for ZgPHP meetup IRC channel (#zgphp on freenode).",
+    "keywords": ["irc","zgphp","bot"],
+    "homepage": "https://github.com/zgphp/ircbot",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ivan Habunek",
+            "email": "ivan.habunek@gmail.com"
+        }
+    ],
+    "require": {
+        "phergie/phergie-irc-client-react": "dev-master"
+    },
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-0": {"ZgPhp\\IrcBot": "src/"}
+    },
+    "support": {
+        "issues": "https://github.com/ihabunek/phormium-modgen/issues"
+    },
+    "bin": ["bin/ircbot"]
+}

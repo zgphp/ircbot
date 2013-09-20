@@ -67,7 +67,7 @@ class Weather extends MessagePatternPlugin
         }
         $weather = ucfirst(implode(', ', $weather));
 
-        $messages = [];
+        $messages = array();
         $messages[] = "Weather for {$data->name}, {$data->sys->country}";
         $messages[] = $weather;
         $messages[] = "Temperature: {$data->main->temp}°C";

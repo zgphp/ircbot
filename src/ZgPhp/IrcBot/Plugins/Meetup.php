@@ -80,7 +80,7 @@ class Meetup extends MessagePatternPlugin
     /** Formats the meetup data to a string. */
     protected function parseMeetup($meetup)
     {
-        $venue = [$meetup->venue->name];
+        $venue = array($meetup->venue->name);
 
         if (isset($meetup->venue->address_1)) {
             $venue[] = $meetup->venue->address_1;

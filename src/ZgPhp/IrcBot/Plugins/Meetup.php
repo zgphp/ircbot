@@ -5,7 +5,15 @@ namespace ZgPhp\IrcBot\Plugins;
 use ZgPhp\IrcBot\MessagePatternPlugin;
 
 /**
- * ZgPHP meetup data from meetup.com.
+ * Displays ZgPHP meetup data from meetup.com.
+ *
+ * Required settings:
+ *
+ * meetup:
+ *     api_key: 123456
+ *
+ * Get the API key from:
+ * http://www.meetup.com/meetup_api/key/
  */
 class Meetup extends MessagePatternPlugin
 {
@@ -15,9 +23,8 @@ class Meetup extends MessagePatternPlugin
 
     const ZGPHP_GROUP_ID = 8328272;
 
-
+    /** The meetup.com api access key, read from settings (meetup.api_key).*/
     private $apiKey;
-    //events?key=427204e61372b4ee4c553d3b30933&group_id=8328272&status=upcoming
 
     protected function init()
     {
@@ -35,7 +42,16 @@ class Meetup extends MessagePatternPlugin
             case "next":
                 $this->handleNext($message, $write);
                 break;
+            default:
+                $this->showUsage($message, $write);
         }
+    }
+
+    protected function showUsage($message, $write)
+    {
+        $channel = $message['params']['receivers'];
+        $write->ircPrivmsg($channel, "Meetup plugin usage:");
+        $write->ircPrivmsg($channel, "!meetup next - show next meetup info");
     }
 
     protected function handleNext($message, $write)
@@ -51,33 +67,47 @@ class Meetup extends MessagePatternPlugin
         // Meetups are sorted by time
         $meetup = $meetups[0];
 
-        print_r($meetup);
-
         if ($meetup->visibility !== 'public') {
             $write->ircPrivmsg($channel, "Next meetup not scheduled.");
             return;
         }
 
-        $venue = [];
-        $venue[] = $meetup->venue->name;
+        $text = $this->parseMeetup($meetup);
+        $channel = $message['params']['receivers'];
+        $write->ircPrivmsg($channel, $text);
+    }
+
+    /** Formats the meetup data to a string. */
+    protected function parseMeetup($meetup)
+    {
+        $venue = [$meetup->venue->name];
+
         if (isset($meetup->venue->address_1)) {
             $venue[] = $meetup->venue->address_1;
         }
+
         if (isset($meetup->venue->address_2)) {
             $venue[] = $meetup->venue->address_2;
         }
+
         if (isset($meetup->venue->address_3)) {
             $venue[] = $meetup->venue->address_3;
         }
+
+        if (isset($meetup->venue->city)) {
+            $venue[] = $meetup->venue->city;
+        }
+
         $venue = implode(', ', $venue);
 
-        $time = date('d.m.Y. \\a\\t H:i', $meetup->time);
-        $url = $meetup->event_url;
         $attending = $meetup->yes_rsvp_count;
-        $text = "Next ZgPHP meetup is scheduled for $time at $venue. Attending: $attending developers. RSVP here: $url";
+        $date = date('d.m.Y', $meetup->time / 1000);
+        $time = date('H:i', $meetup->time / 1000);
+        $name = $meetup->name;
+        $url = $meetup->event_url;
 
-        $channel = $message['params']['receivers'];
-        $write->ircPrivmsg($channel, $text);
+        return "Next meetup: $name on $date starting from $time at $venue. " .
+            "Attending: $attending developers. Details and RSVP: $url";
     }
 
     protected function fetchPendingMeetups()
@@ -103,71 +133,3 @@ class Meetup extends MessagePatternPlugin
         return $data;
     }
 }
-
-/*
-stdClass Object
-(
-    [results] => Array
-        (
-            [0] => stdClass Object
-                (
-                    [status] => upcoming
-                    [visibility] => public
-                    [maybe_rsvp_count] => 0
-                    [venue] => stdClass Object
-                        (
-                            [id] => 13213372
-                            [lon] => 15.974297
-                            [repinned] =>
-                            [name] => Mama
-                            [address_1] => Preradoviceva 18
-                            [lat] => 45.810158
-                            [country] => hr
-                            [city] => Zagreb
-                        )
-
-                    [id] => 140394332
-                    [utc_offset] => 7200000
-                    [time] => 1382023800000
-                    [waitlist_count] => 0
-                    [announced] =>
-                    [updated] => 1379280288000
-                    [yes_rsvp_count] => 3
-                    [created] => 1379280288000
-                    [event_url] => http://www.meetup.com/ZgPHP-meetup/events/140394332/
-                    [description] => <br />
-                    [name] => ZgPHP Meetup #26
-                    [headcount] => 0
-                    [group] => stdClass Object
-                        (
-                            [id] => 8328272
-                            [group_lat] => 45.799999237061
-                            [name] => ZgPHP meetup
-                            [group_lon] => 15.970000267029
-                            [join_mode] => open
-                            [urlname] => ZgPHP-meetup
-                            [who] => Developers
-                        )
-
-                )
-
-        )
-
-    [meta] => stdClass Object
-        (
-            [lon] =>
-            [count] => 1
-            [link] => http://api.meetup.com/2/events
-            [next] =>
-            [total_count] => 1
-            [url] => http://api.meetup.com/2/events?key=427204e61372b4ee4c553d3b30933&group_id=8328272&status=upcoming&order=time&limited_events=False&desc=false&offset=0&format=json&page=200&fields=
-            [id] =>
-            [title] => Meetup Events v2
-            [updated] => 1379280288000
-            [description] => Access Meetup events using a group, member, or event id. Events in private groups are available only to authenticated members of those groups. To search events by topic or location, see [Open Events](/meetup_api/docs/2/open_events).
-            [method] => Events
-            [lat] =>
-        )
-
-)
-*/

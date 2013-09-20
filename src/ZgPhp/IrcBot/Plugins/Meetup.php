@@ -113,11 +113,11 @@ class Meetup extends MessagePatternPlugin
     protected function fetchPendingMeetups()
     {
         $url = self::API_BASE . 'events?';
-        $params = [
+        $params = array(
             'group_id' => self::ZGPHP_GROUP_ID,
             'key' => $this->apiKey,
             'status' => 'upcoming'
-        ];
+        );
         $url .= http_build_query($params);
 
         $data = file_get_contents($url);

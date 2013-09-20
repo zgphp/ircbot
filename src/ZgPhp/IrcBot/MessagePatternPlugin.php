@@ -1,6 +1,6 @@
 <?php
 
-namespace ZgPhp\IrcBot\Plugins;
+namespace ZgPhp\IrcBot;
 
 use ZgPhp\IrcBot\Plugin;
 
@@ -21,7 +21,7 @@ abstract class MessagePatternPlugin extends Plugin
     }
 
     /** Handler for messages which match the pattern. */
-    abstract protected function handle($message, $matches, $write)
+    protected function handle($message, $matches, $write)
     {
 
     }

@@ -43,7 +43,7 @@ class Plugin
         if (isset($message['command'])) {
             switch($message['command']) {
                 case "PING":
-                    $this->onPing();
+                    $this->onPing($message, $write);
                     break;
 
                 case 376: // RPL_ENDOFMOTD

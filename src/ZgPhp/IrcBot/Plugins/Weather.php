@@ -2,6 +2,8 @@
 
 namespace ZgPhp\IrcBot\Plugins;
 
+use ZgPhp\IrcBot\MessagePatternPlugin;
+
 /**
  * Weather plugin
  *
@@ -33,10 +35,12 @@ class Weather extends MessagePatternPlugin
         $query = $matches[1];
 
         try {
-            $weather = $this->getWeather($query);
-            $write->ircPrivmsg($channel, $weather);
+            $messages = $this->getWeather($query);
+            foreach($messages as $message) {
+                $write->ircPrivmsg($channel, $message);
+            }
         } catch (\Exception $ex) {
-            $write->ircPrivmsg($channel, "Weather plugin error: " . $ex->getMessage());
+            $write->ircPrivmsg($channel, "Error: " . $ex->getMessage());
         }
     }
 
@@ -49,16 +53,17 @@ class Weather extends MessagePatternPlugin
         foreach($data->weather as $item) {
             $weather[] = $item->description;
         }
-        $weather = implode(', ', $weather);
+        $weather = ucfirst(implode(', ', $weather));
 
-        $temp = $data->main->temp . "°C";
-        $pressure = $data->main->pressure . " hPa";
-        $humidity = "humidity {$data->main->humidity}%";
-        $wind = $this->parseWind($data->wind);
+        $messages = [];
+        $messages[] = "Weather for {$data->name}, {$data->sys->country}";
+        $messages[] = $weather;
+        $messages[] = "Temperature: {$data->main->temp}°C";
+        $messages[] = "Atmospheric pressure: {$data->main->pressure} hPa";
+        $messages[] = "Humidity: {$data->main->humidity}%";
+        $messages[] = "Wind: " . $this->parseWind($data->wind);
 
-        $message = "Weather in $data->name: $weather, $temp, $pressure, $wind, $humidity";
-
-        return $message;
+        return $messages;
     }
 
     /** Fetches data from server */
@@ -75,6 +80,10 @@ class Weather extends MessagePatternPlugin
         $data = json_decode($data);
         if ($data === false) {
             throw new \Exception ("Failed decoding data from api.openweathermap.org");
+        }
+
+        if ($data->cod == 404) {
+            throw new \Exception("Place \"$query\" not found");
         }
 
         return $data;
@@ -111,6 +120,6 @@ class Weather extends MessagePatternPlugin
             }
         }
 
-        return "wind {$wind->speed}mph $direction";
+        return "{$wind->speed}mph $direction";
     }
 }

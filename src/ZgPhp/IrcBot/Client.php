@@ -79,8 +79,12 @@ class Client
     protected function setupPlugin($class)
     {
         if (!class_exists($class)) {
-            $this->log->error("Cannot find plugin class [$class]. Skipping.\n");
-            return;
+            // Try default namespace
+            $class = __NAMESPACE__ . '\\Plugins\\' . $class;
+            if (!class_exists($class)) {
+                $this->log->error("Cannot find plugin class [$class]. Skipping.\n");
+                return;
+            }
         }
 
         $plugin = new $class($this->settings, $this->log);

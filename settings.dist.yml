@@ -1,0 +1,14 @@
+server_host: 'chat.freenode.net'
+server_port: 6666
+nickname: nickname
+username: username
+password: password
+realname: 'Real name'
+
+plugins:
+    - AutoJoin
+    - Weather
+
+autojoin:
+    channels:
+        - "#zgphp"

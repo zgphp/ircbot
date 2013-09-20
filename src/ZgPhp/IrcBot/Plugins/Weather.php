@@ -22,12 +22,17 @@ use ZgPhp\IrcBot\MessagePatternPlugin;
  *
  * will produce something like:
  * ```
- *
+ * Weather for Zagreb, HR
+ * Sky is Clear
+ * Temperature: 18°C
+ * Atmospheric pressure: 1017 hPa
+ * Humidity: 55%
+ * Wind: 2.1mph southerly
  * ```
  */
 class Weather extends MessagePatternPlugin
 {
-    protected $pattern = '/^weather (.+)$/';
+    protected $pattern = '/^!weather (.+)$/';
 
     protected function handle($message, $matches, $write)
     {
@@ -42,6 +47,13 @@ class Weather extends MessagePatternPlugin
         } catch (\Exception $ex) {
             $write->ircPrivmsg($channel, "Error: " . $ex->getMessage());
         }
+    }
+
+    protected function showUsage($message, $write)
+    {
+        $channel = $message['params']['receivers'];
+        $write->ircPrivmsg($channel, "Weather plugin usage:");
+        $write->ircPrivmsg($channel, "!weather <place> - show weather for given place");
     }
 
     /** Returns weather data for given query. */

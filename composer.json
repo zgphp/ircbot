@@ -3,7 +3,7 @@
     "type": "library",
     "description": "Support bot for ZgPHP meetup IRC channel (#zgphp on freenode).",
     "keywords": ["irc","zgphp","bot"],
-    "homepage": "https://github.com/zgphp/ircbot",
+    "homepage": "https://github.com/ZgPHP/ircbot",
     "license": "MIT",
     "authors": [
         {
@@ -19,7 +19,7 @@
         "psr-0": {"ZgPhp\\IrcBot": "src/"}
     },
     "support": {
-        "issues": "https://github.com/ihabunek/phormium-modgen/issues"
+        "issues": "https://github.com/ZgPHP/ircbot/issues"
     },
     "bin": ["bin/ircbot"]
 }

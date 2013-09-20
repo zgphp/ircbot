@@ -114,7 +114,7 @@ class Weather extends MessagePatternPlugin
         }
 
         // Map degree to geographic direction
-        $dirMap = [
+        $dirMap = array(
             22.5 => 'northerly',
             67.5 => 'northeasterly',
             112.5 => 'easterly',
@@ -124,7 +124,7 @@ class Weather extends MessagePatternPlugin
             292.5 => 'westerly',
             337.5 => 'northwesterly',
             360 => 'northerly',
-        ];
+        );
 
         foreach($dirMap as $degLimit => $direction) {
             if ($wind->deg < $degLimit) {

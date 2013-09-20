@@ -17,7 +17,7 @@ use ZgPhp\IrcBot\MessagePatternPlugin;
  */
 class Meetup extends MessagePatternPlugin
 {
-    protected $pattern = '/^!meetup (.+)$/i';
+    protected $pattern = '/^!meetup(.*)$/i';
 
     const API_BASE = "http://api.meetup.com/2/";
 
@@ -36,11 +36,15 @@ class Meetup extends MessagePatternPlugin
 
     protected function handle($message, $matches, $write)
     {
-        $command = strtolower(trim($matches[1]));
+        $command = isset($matches[1]) ? $matches[1] : null;
+        $command = strtolower(trim($command));
 
         switch($command) {
             case "next":
                 $this->handleNext($message, $write);
+                break;
+            case "upcoming":
+                $this->handleUpcoming($message, $write);
                 break;
             default:
                 $this->showUsage($message, $write);
@@ -51,20 +55,19 @@ class Meetup extends MessagePatternPlugin
     {
         $channel = $message['params']['receivers'];
         $write->ircPrivmsg($channel, "Meetup plugin usage:");
-        $write->ircPrivmsg($channel, "!meetup next - show next meetup info");
+        $write->ircPrivmsg($channel, "!meetup next - show details for next meetup");
+        $write->ircPrivmsg($channel, "!meetup upcoming - show list of upcoming meetups");
     }
 
     protected function handleNext($message, $write)
     {
-        $data = $this->fetchPendingMeetups();
-        $meetups = $data->results;
-
+        $meetups = $this->fetchPendingMeetups();
         if (empty($meetups)) {
             $write->ircPrivmsg($channel, "Next meetup not scheduled.");
             return;
         }
 
-        // Meetups are sorted by time
+        // Meetups are sorted by time, take first one
         $meetup = $meetups[0];
 
         if ($meetup->visibility !== 'public') {
@@ -72,42 +75,83 @@ class Meetup extends MessagePatternPlugin
             return;
         }
 
-        $text = $this->parseMeetup($meetup);
+        $text = "Next meetup" . $this->parseMeetup($meetup);
         $channel = $message['params']['receivers'];
         $write->ircPrivmsg($channel, $text);
+    }
+
+    protected function handleUpcoming($message, $write)
+    {
+        $meetups = $this->fetchPendingMeetups();
+        if (empty($meetups)) {
+            $write->ircPrivmsg($channel, "No meetups are scheduled.");
+            return;
+        }
+
+        $channel = $message['params']['receivers'];
+        $write->ircPrivmsg($channel, "Upcoming ZgPHP meetups:");
+        foreach($meetups as $meetup) {
+            if ($meetup->visibility == 'public') {
+                $text = $this->parseMeetupShort($meetup);
+                $write->ircPrivmsg($channel, $text);
+            }
+        }
     }
 
     /** Formats the meetup data to a string. */
     protected function parseMeetup($meetup)
     {
-        $venue = array($meetup->venue->name);
-
-        if (isset($meetup->venue->address_1)) {
-            $venue[] = $meetup->venue->address_1;
-        }
-
-        if (isset($meetup->venue->address_2)) {
-            $venue[] = $meetup->venue->address_2;
-        }
-
-        if (isset($meetup->venue->address_3)) {
-            $venue[] = $meetup->venue->address_3;
-        }
-
-        if (isset($meetup->venue->city)) {
-            $venue[] = $meetup->venue->city;
-        }
-
-        $venue = implode(', ', $venue);
-
         $attending = $meetup->yes_rsvp_count;
-        $date = date('d.m.Y', $meetup->time / 1000);
-        $time = date('H:i', $meetup->time / 1000);
         $name = $meetup->name;
         $url = $meetup->event_url;
 
-        return "Next meetup: $name on $date starting from $time at $venue. " .
+        $venue = $this->parseVenue($meetup->venue);
+        $dt = $this->parseDateTime($meetup);
+        $date = $dt->format('d.m.Y');
+        $time = $dt->format('H:i');
+
+        return "$name on $date starting from $time at $venue. " .
             "Attending: $attending developers. Details and RSVP: $url";
+    }
+
+    public function parseMeetupShort($meetup)
+    {
+        $name = $meetup->name;
+
+        $venue = $this->parseVenue($meetup->venue);
+        $dt = $this->parseDateTime($meetup);
+        $date = $dt->format('d.m.Y');
+        $time = $dt->format('H:i');
+
+        return "$name: $date from $time at $venue";
+    }
+
+    /** Parses the venue data to a string. */
+    protected function parseVenue($venue)
+    {
+        $data = array($venue->name);
+
+        foreach(array('address_1', 'address_2', 'address_3', 'city') as $key) {
+            if (!empty($venue->$key)) {
+                $data[] = $venue->$key;
+            }
+        }
+
+        return implode(', ', $data);
+    }
+
+    /** Returns the meetup datetime as a DateTime object. */
+    protected function parseDateTime($meetup)
+    {
+        // Use time zone from meetup data so format() returns local time
+        // instead of UTC.
+        $timezone = new \DateTimeZone($meetup->timezone);
+
+        $dateTime = new \DateTime();
+        $dateTime->setTimestamp($meetup->time / 1000);
+        $dateTime->setTimeZone($timezone);
+
+        return $dateTime;
     }
 
     protected function fetchPendingMeetups()
@@ -116,7 +160,9 @@ class Meetup extends MessagePatternPlugin
         $params = array(
             'group_id' => self::ZGPHP_GROUP_ID,
             'key' => $this->apiKey,
-            'status' => 'upcoming'
+            'status' => 'upcoming',
+            'text_format' => 'plain',
+            'fields' => 'timezone'
         );
         $url .= http_build_query($params);
 
@@ -130,6 +176,6 @@ class Meetup extends MessagePatternPlugin
             throw new \Exception("Failed decoding meetup.com data.");
         }
 
-        return $data;
+        return $data->results;
     }
 }

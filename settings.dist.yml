@@ -1,14 +1,19 @@
 server_host: 'chat.freenode.net'
 server_port: 6666
-nickname: nickname
-username: username
-password: password
-realname: 'Real name'
+nickname: zgphp
+username: zgphp
+password: <password>
+realname: 'ZgPHP bot'
 
 plugins:
     - AutoJoin
     - Weather
+    - PingPong
+    - Meetup
 
 autojoin:
     channels:
         - "#zgphp"
+
+meetup:
+    api_key: <meetup.com api key>

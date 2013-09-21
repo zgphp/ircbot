@@ -31,9 +31,17 @@ class Bartender extends MessagePatternPlugin
         "Starocesko Crveno Premium",
         "Starocesko Zimsko",
         "Starocesko",
-        "Svijetlo Velebitsko",
-        "Tamno Velebitsko",
+        "Velebitsko Svijetlo",
+        "Velebitsko Tamno",
         "Vukovarsko",
+        "Tomislav",
+        "Osjecko Svijetlo",
+        "Osjecko Tamno",
+        "Zlatni Medvjed",
+        "Crna Kraljica",
+        "Mrki Medvjed",
+        "Dva Klasa",
+        "Grička Vjestica",
     );
 
     protected function handle(Event $event, $matches)

@@ -5,12 +5,13 @@ namespace ZgPhp\IrcBot\Plugins;
 use ZgPhp\IrcBot\MessagePatternPlugin;
 
 /**
- * Displays ZgPHP meetup data from meetup.com.
+ * Displays meetup data from meetup.com.
  *
  * Required settings:
  *
  * meetup:
- *     api_key: 123456
+ *     api_key:  # meetup.com api key
+ *     group_id: # the ID of the group to work on
  *
  * Get the API key from:
  * http://www.meetup.com/meetup_api/key/
@@ -21,17 +22,16 @@ class Meetup extends MessagePatternPlugin
 
     const API_BASE = "http://api.meetup.com/2/";
 
-    const ZGPHP_GROUP_ID = 8328272;
-
     /** The meetup.com api access key, read from settings (meetup.api_key).*/
     private $apiKey;
 
+    /** The meetup.com group ID for which to fetch data. */
+    private $groupID;
+
     protected function init()
     {
-        if (!isset($this->settings['meetup']['api_key'])) {
-            throw new \Exception("Missing meetup.api_key setting.");
-        }
-        $this->apiKey = $this->settings['meetup']['api_key'];
+        $this->apiKey = $this->getSetting(array('meetup', 'api_key'));
+        $this->groupID = $this->getSetting(array('meetup', 'group_id'));
     }
 
     protected function handle($message, $matches, $write)
@@ -55,10 +55,11 @@ class Meetup extends MessagePatternPlugin
     {
         $channel = $message['params']['receivers'];
         $write->ircPrivmsg($channel, "Meetup plugin usage:");
-        $write->ircPrivmsg($channel, "!meetup next - show details for next meetup");
-        $write->ircPrivmsg($channel, "!meetup upcoming - show list of upcoming meetups");
+        $write->ircPrivmsg($channel, "    !meetup next - show details for next meetup");
+        $write->ircPrivmsg($channel, "    !meetup upcoming - show list of upcoming meetups");
     }
 
+    /** Triggered on "next" command. */
     protected function handleNext($message, $write)
     {
         $meetups = $this->fetchPendingMeetups();
@@ -75,11 +76,12 @@ class Meetup extends MessagePatternPlugin
             return;
         }
 
-        $text = "Next meetup" . $this->parseMeetup($meetup);
+        $text = $this->parseMeetup($meetup);
         $channel = $message['params']['receivers'];
         $write->ircPrivmsg($channel, $text);
     }
 
+    /** Triggered on "upcoming" command. */
     protected function handleUpcoming($message, $write)
     {
         $meetups = $this->fetchPendingMeetups();
@@ -114,6 +116,7 @@ class Meetup extends MessagePatternPlugin
             "Attending: $attending developers. Details and RSVP: $url";
     }
 
+    /** Parses meetup data to a string (shorter). */
     public function parseMeetupShort($meetup)
     {
         $name = $meetup->name;
@@ -154,15 +157,16 @@ class Meetup extends MessagePatternPlugin
         return $dateTime;
     }
 
+    /** Loads pending meetups via meetup.com API. */
     protected function fetchPendingMeetups()
     {
         $url = self::API_BASE . 'events?';
         $params = array(
-            'group_id' => self::ZGPHP_GROUP_ID,
+            'group_id' => $this->groupID,
             'key' => $this->apiKey,
             'status' => 'upcoming',
             'text_format' => 'plain',
-            'fields' => 'timezone'
+            'fields' => 'timezone',
         );
         $url .= http_build_query($params);
 

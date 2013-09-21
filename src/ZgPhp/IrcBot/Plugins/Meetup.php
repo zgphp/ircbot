@@ -91,7 +91,7 @@ class Meetup extends MessagePatternPlugin
         }
 
         $channel = $message['params']['receivers'];
-        $write->ircPrivmsg($channel, "Upcoming ZgPHP meetups:");
+        $write->ircPrivmsg($channel, "Upcoming meetups:");
         foreach($meetups as $meetup) {
             if ($meetup->visibility == 'public') {
                 $text = $this->parseMeetupShort($meetup);

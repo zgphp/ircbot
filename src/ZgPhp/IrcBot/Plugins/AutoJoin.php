@@ -21,11 +21,11 @@ use ZgPhp\IrcBot\Plugin;
  */
 class AutoJoin extends Plugin
 {
+    private $channels;
+
     protected function init()
     {
-        if (!isset($this->settings['autojoin']['channels'])) {
-            $this->log->error("AutoJoin: Missing setting autojoin > channels. Shutting down plugin.\n");
-        }
+        $this->channels = $this->getSetting(array('autojoin', 'channels'));
     }
 
     public function onEndMotd($message, $write)

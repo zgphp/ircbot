@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "d1849800a6b31092ca1c8884f92b0127",
+    "hash": "781b7f13eaf9b6fba545b1c36886f3b6",
     "packages": [
         {
             "name": "evenement/evenement",
@@ -119,12 +119,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/phergie/phergie-irc-client-react.git",
-                "reference": "8243cee478d3c5c12c6efd1b2ad4bef473a4ba1e"
+                "reference": "3c89f5c8e3568dee8f88e1643b2bb7147ae26862"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phergie/phergie-irc-client-react/zipball/8243cee478d3c5c12c6efd1b2ad4bef473a4ba1e",
-                "reference": "8243cee478d3c5c12c6efd1b2ad4bef473a4ba1e",
+                "url": "https://api.github.com/repos/phergie/phergie-irc-client-react/zipball/3c89f5c8e3568dee8f88e1643b2bb7147ae26862",
+                "reference": "3c89f5c8e3568dee8f88e1643b2bb7147ae26862",
                 "shasum": ""
             },
             "require": {
@@ -152,7 +152,7 @@
                 "irc",
                 "react"
             ],
-            "time": "2013-08-25 04:36:26"
+            "time": "2013-09-20 14:16:23"
         },
         {
             "name": "phergie/phergie-irc-connection",
@@ -196,12 +196,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/phergie/phergie-irc-generator.git",
-                "reference": "81e82fd64187d64295336251bd218b7f640f30be"
+                "reference": "a2f45a9ffa4d319e6cef36bb238b5a3c3d397fc1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phergie/phergie-irc-generator/zipball/81e82fd64187d64295336251bd218b7f640f30be",
-                "reference": "81e82fd64187d64295336251bd218b7f640f30be",
+                "url": "https://api.github.com/repos/phergie/phergie-irc-generator/zipball/a2f45a9ffa4d319e6cef36bb238b5a3c3d397fc1",
+                "reference": "a2f45a9ffa4d319e6cef36bb238b5a3c3d397fc1",
                 "shasum": ""
             },
             "require": {
@@ -222,7 +222,7 @@
                 "generator",
                 "irc"
             ],
-            "time": "2013-08-13 02:41:36"
+            "time": "2013-09-20 01:15:59"
         },
         {
             "name": "phergie/phergie-irc-parser",
@@ -230,12 +230,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/phergie/phergie-irc-parser.git",
-                "reference": "d36f74fc1bd93f4e05606ec007f6447bcc30ea62"
+                "reference": "a89e05e8a8ccea998d7b0169645ce6c4f6b5344d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phergie/phergie-irc-parser/zipball/d36f74fc1bd93f4e05606ec007f6447bcc30ea62",
-                "reference": "d36f74fc1bd93f4e05606ec007f6447bcc30ea62",
+                "url": "https://api.github.com/repos/phergie/phergie-irc-parser/zipball/a89e05e8a8ccea998d7b0169645ce6c4f6b5344d",
+                "reference": "a89e05e8a8ccea998d7b0169645ce6c4f6b5344d",
                 "shasum": ""
             },
             "require": {
@@ -256,7 +256,7 @@
                 "irc",
                 "parser"
             ],
-            "time": "2013-08-13 12:34:23"
+            "time": "2013-09-20 00:50:19"
         },
         {
             "name": "psr/log",

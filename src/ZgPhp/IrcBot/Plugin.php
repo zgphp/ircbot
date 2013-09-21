@@ -22,39 +22,39 @@ class Plugin
 
     }
 
-    public function onPrivMsg($message, $write)
+    public function onPrivMsg(Event $event)
     {
 
     }
 
-    public function onPing($message, $write)
+    public function onPing(Event $event)
     {
 
     }
 
-    public function onEndMotd($message, $write)
+    public function onEndMotd(Event $event)
     {
 
     }
 
     /** Called by Client when a message is recieved. */
-    public function dispatch($message, $write, $connection)
+    public function dispatch(Event $event)
     {
-        if (isset($message['command'])) {
-            switch($message['command']) {
-                case "PING":
-                    $this->onPing($message, $write);
-                    break;
+        switch($event->getCommand()) {
 
-                case 376: // RPL_ENDOFMOTD
-                case 422: // ERR_NOMOTD
-                    $this->onEndMotd($message, $write);
-                    break;
+            case "PING":
+                $this->onPing($event);
+                break;
 
-                case "PRIVMSG":
-                    $this->onPrivMsg($message, $write);
-                    break;
-            }
+            case 376: // RPL_ENDOFMOTD
+            case 422: // ERR_NOMOTD
+                $this->onEndMotd($event);
+                break;
+
+
+            case "PRIVMSG":
+                $this->onPrivMsg($event);
+                break;
         }
     }
 

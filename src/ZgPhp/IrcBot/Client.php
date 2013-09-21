@@ -78,6 +78,8 @@ class Client
 
     protected function setupPlugin($class)
     {
+        $this->log->info("Activating plugin: $class\n");
+
         if (!class_exists($class)) {
             // Try default namespace
             $class = __NAMESPACE__ . '\\Plugins\\' . $class;
@@ -99,8 +101,12 @@ class Client
 
     public function handleReceived($message, $write, $connection, $logger)
     {
+        $event = new Event($message, $write, $connection, $logger);
+
+        file_put_contents('log.txt', print_r($message, true), FILE_APPEND);
+
         foreach($this->plugins as $plugin) {
-            $plugin->dispatch($message, $write, $connection);
+            $plugin->dispatch($event);
         }
     }
 }

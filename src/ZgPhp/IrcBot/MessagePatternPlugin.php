@@ -3,6 +3,7 @@
 namespace ZgPhp\IrcBot;
 
 use ZgPhp\IrcBot\Plugin;
+use ZgPhp\IrcBot\Event;
 
 /** Base class for plugins which are triggered by a PrivMsg of a certain pattern. */
 abstract class MessagePatternPlugin extends Plugin
@@ -11,18 +12,15 @@ abstract class MessagePatternPlugin extends Plugin
     protected $pattern;
 
     /** Parse priv messages an look for those matching the pattern. */
-    public function onPrivMsg($message, $write)
+    public function onPrivMsg(Event $event)
     {
-        $text = $message['params']['text'];
+        $text = $event->message['params']['text'];
 
         if (preg_match($this->pattern, $text, $matches)) {
-            $this->handle($message, $matches, $write);
+            $this->handle($event, $matches);
         }
     }
 
     /** Handler for messages which match the pattern. */
-    protected function handle($message, $matches, $write)
-    {
-
-    }
+    abstract protected function handle(Event $event, $matches);
 }

@@ -2,6 +2,7 @@
 
 namespace ZgPhp\IrcBot\Plugins;
 
+use ZgPhp\IrcBot\Event;
 use ZgPhp\IrcBot\MessagePatternPlugin;
 
 /**
@@ -32,28 +33,30 @@ use ZgPhp\IrcBot\MessagePatternPlugin;
  */
 class Weather extends MessagePatternPlugin
 {
-    protected $pattern = '/^!weather (.+)$/';
+    protected $pattern = '/^!weather(.*)$/';
 
-    protected function handle($message, $matches, $write)
+    protected function handle(Event $event, $matches)
     {
-        $channel = $message['params']['receivers'];
-        $query = $matches[1];
+        $query = trim($matches[1]);
+
+        if (empty($query)) {
+            $this->showUsage($event);
+        }
 
         try {
             $messages = $this->getWeather($query);
             foreach($messages as $message) {
-                $write->ircPrivmsg($channel, $message);
+                $event->reply($message);
             }
         } catch (\Exception $ex) {
-            $write->ircPrivmsg($channel, "Error: " . $ex->getMessage());
+            $event->reply("Error: " . $ex->getMessage());
         }
     }
 
-    protected function showUsage($message, $write)
+    protected function showUsage(Event $event)
     {
-        $channel = $message['params']['receivers'];
-        $write->ircPrivmsg($channel, "Weather plugin usage:");
-        $write->ircPrivmsg($channel, "!weather <place> - show weather for given place");
+        $event->reply("Weather plugin usage:");
+        $event->reply("!weather <place> - show weather for given place");
     }
 
     /** Returns weather data for given query. */

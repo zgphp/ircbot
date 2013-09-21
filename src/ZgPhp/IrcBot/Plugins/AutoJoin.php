@@ -3,6 +3,7 @@
 namespace ZgPhp\IrcBot\Plugins;
 
 use ZgPhp\IrcBot\Plugin;
+use ZgPhp\IrcBot\Event;
 
 /**
  * AutoJoin plugin
@@ -26,18 +27,16 @@ class AutoJoin extends Plugin
     protected function init()
     {
         $this->channels = $this->getSetting(array('autojoin', 'channels'));
+
+        if (is_string($this->channels)) {
+            $this->channels = array($this->channels);
+        }
     }
 
-    public function onEndMotd($message, $write)
+    public function onEndMotd(Event $event)
     {
-        $channels = $this->settings['autojoin']['channels'];
-
-        if (is_string($channels)) {
-            $channels = array($channels);
-        }
-
-        foreach($channels as $channel) {
-            $write->ircJoin($channel);
+        foreach($this->channels as $channel) {
+            $event->write->ircJoin($channel);
         }
     }
 }

@@ -2,6 +2,7 @@
 
 namespace ZgPhp\IrcBot\Plugins;
 
+use ZgPhp\IrcBot\Event;
 use ZgPhp\IrcBot\MessagePatternPlugin;
 
 /**
@@ -34,37 +35,36 @@ class Meetup extends MessagePatternPlugin
         $this->groupID = $this->getSetting(array('meetup', 'group_id'));
     }
 
-    protected function handle($message, $matches, $write)
+    protected function handle(Event $event, $matches)
     {
         $command = isset($matches[1]) ? $matches[1] : null;
         $command = strtolower(trim($command));
 
         switch($command) {
             case "next":
-                $this->handleNext($message, $write);
+                $this->handleNext($event);
                 break;
             case "upcoming":
-                $this->handleUpcoming($message, $write);
+                $this->handleUpcoming($event);
                 break;
             default:
-                $this->showUsage($message, $write);
+                $this->showUsage($event);
         }
     }
 
-    protected function showUsage($message, $write)
+    protected function showUsage(Event $event)
     {
-        $channel = $message['params']['receivers'];
-        $write->ircPrivmsg($channel, "Meetup plugin usage:");
-        $write->ircPrivmsg($channel, "    !meetup next - show details for next meetup");
-        $write->ircPrivmsg($channel, "    !meetup upcoming - show list of upcoming meetups");
+        $event->reply("Meetup plugin usage:");
+        $event->reply("    !meetup next - show details for next meetup");
+        $event->reply("    !meetup upcoming - show list of upcoming meetups");
     }
 
     /** Triggered on "next" command. */
-    protected function handleNext($message, $write)
+    protected function handleNext(Event $event)
     {
         $meetups = $this->fetchPendingMeetups();
         if (empty($meetups)) {
-            $write->ircPrivmsg($channel, "Next meetup not scheduled.");
+            $event->reply("Next meetup not scheduled.");
             return;
         }
 
@@ -72,30 +72,28 @@ class Meetup extends MessagePatternPlugin
         $meetup = $meetups[0];
 
         if ($meetup->visibility !== 'public') {
-            $write->ircPrivmsg($channel, "Next meetup not scheduled.");
+            $event->reply("Next meetup not scheduled.");
             return;
         }
 
         $text = $this->parseMeetup($meetup);
-        $channel = $message['params']['receivers'];
-        $write->ircPrivmsg($channel, $text);
+        $event->reply($text);
     }
 
     /** Triggered on "upcoming" command. */
-    protected function handleUpcoming($message, $write)
+    protected function handleUpcoming(Event $event)
     {
         $meetups = $this->fetchPendingMeetups();
         if (empty($meetups)) {
-            $write->ircPrivmsg($channel, "No meetups are scheduled.");
+            $event->reply("No meetups are scheduled.");
             return;
         }
 
-        $channel = $message['params']['receivers'];
-        $write->ircPrivmsg($channel, "Upcoming meetups:");
+        $event->reply("Upcoming meetups:");
         foreach($meetups as $meetup) {
             if ($meetup->visibility == 'public') {
                 $text = $this->parseMeetupShort($meetup);
-                $write->ircPrivmsg($channel, $text);
+                $event->reply($text);
             }
         }
     }

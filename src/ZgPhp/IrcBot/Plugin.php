@@ -57,4 +57,24 @@ class Plugin
             }
         }
     }
+
+    /** Returns the specified value from settings. */
+    protected function getSetting(array $path, $optional = false)
+    {
+        $settings = $this->settings;
+        foreach($path as $item) {
+            if (!isset($settings[$item])) {
+                if ($optional) {
+                    return null;
+                } else {
+                    $logPath = implode('.', $path);
+                    throw new \Exception("Required setting [$logPath] not found.");
+                }
+            }
+
+            $settings = $settings[$item];
+        }
+
+        return $settings;
+    }
 }

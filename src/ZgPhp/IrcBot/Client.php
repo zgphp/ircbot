@@ -7,10 +7,28 @@ use Phergie\Irc\Connection;
 
 class Client
 {
+    /**
+     * The Phergie IRC client.
+     * @var Phergie\Irc\Client\React\Client
+     */
     private $client;
+
+    /**
+     * Phergie cnnection object, holds connection data.
+     * @var Phergie\Irc\Connection
+     */
     private $connection;
+
+    /**
+     * The logger
+     * @var Monolog\Logger
+     */
     private $log;
+
+    /** Array of active plugins. */
     private $plugins = array();
+
+    /** Decoded settings from settings.yml. */
     private $settings;
 
     public function __construct($settings)
@@ -19,6 +37,7 @@ class Client
         $this->client = new PhergieClient();
         $this->connection = $this->createConnection($settings);
         $this->log = $this->client->getLogger();
+
         $this->setupPlugins();
         $this->setupBindings();
     }
@@ -107,13 +126,12 @@ class Client
         }
     }
 
+    /**
+     * Returns the underlying event loop implementation.
+     * @return React\EventLoop\LoopInterface
+     */
     public function getLoop()
     {
         return $this->client->getLoop();
-    }
-
-    public function getWriteStream()
-    {
-        return $this->client->getWriteStream();
     }
 }

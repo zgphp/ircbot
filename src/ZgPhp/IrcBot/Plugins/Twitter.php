@@ -56,13 +56,14 @@ class Twitter extends Plugin
 
     protected function init()
     {
+        $this->channel = $this->getSetting(array('twitter', 'channel'));
+        $this->delay = $this->getSetting(array('twitter', 'delay'), true, self::DEFAULT_DELAY);
+        $this->query = $this->getSetting(array('twitter', 'query'));
+
         $consumerKey = $this->getSetting(array('twitter', 'consumer_key'));
         $consumerSecret = $this->getSetting(array('twitter', 'consumer_secret'));
         $accessToken = $this->getSetting(array('twitter', 'access_token'));
         $accessTokenSecret = $this->getSetting(array('twitter', 'access_token_secret'));
-        $this->channel = $this->getSetting(array('twitter', 'channel'));
-        $this->delay = $this->getSetting(array('twitter', 'delay'), true, self::DEFAULT_DELAY);
-        $this->query = $this->getSetting(array('twitter', 'query'));
 
         $this->twitter = new \Twitter($consumerKey, $consumerSecret, $accessToken, $accessTokenSecret);
 

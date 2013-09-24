@@ -37,14 +37,20 @@ class Twitter extends Plugin
      */
     private $query;
 
-    /** How often to look for tweets. */
+    /** How often to look for new tweets. */
     private $delay;
 
     /** ID of the last tweet posted to IRC. */
     private $sinceID;
 
-    /** Channel to write to. */
+    /** IRC channel to write to (e.g. "#zgphp"). */
     private $channel;
+
+    /**
+     * The write stream.
+     * @var Phergie\Irc\Client\React\WriteStream
+     */
+    private $write;
 
     protected function init()
     {
@@ -71,6 +77,10 @@ class Twitter extends Plugin
     public function onEndMotd(Event $event)
     {
         $this->log->debug("Twitter plugin: setting up periodic timer with delay of $this->delay seconds.");
+
+        // Save the write stream so the plugin can write on demand
+        $this->write = $event->write;
+
         $loop = $this->getClient()->getLoop();
         $loop->addPeriodicTimer($this->delay, array($this, 'findMentions'));
     }
@@ -80,6 +90,8 @@ class Twitter extends Plugin
         $args = array(
             'q' => $this->query,
             'since_id' => $this->sinceID,
+            'result_type' => 'recent', // return only the most recent results in the response
+            'count' => 1 // remove
         );
 
         $data = $this->twitter->request('search/tweets', 'GET', $args);
@@ -88,7 +100,9 @@ class Twitter extends Plugin
         }
 
         $count = count($data->statuses);
-        $this->log->debug("Twitter plugin: Found $count mentions.");
+        if ($count > 0) {
+            $this->log->debug("Twitter plugin: Found $count mentions.\n");
+        }
 
         foreach($data->statuses as $status) {
             $id = $status->id_str;
@@ -101,10 +115,10 @@ class Twitter extends Plugin
             }
 
             $url = "https://twitter.com/$user/status/$id";
-            $text = "Tweet from @$user: $text .::. $url";
+            $text = "@$user tweeted: $text .::. $url";
 
-            $write = $this->getClient()->getWriteStream();
-            $write->ircPrivMsg($this->channel, $text);
+            // $write = $this->getClient()->getWriteStream();
+            $this->write->ircPrivMsg($this->channel, $text);
         }
 
         $this->sinceID = $data->search_metadata->max_id_str;

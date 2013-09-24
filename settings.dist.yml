@@ -16,4 +16,15 @@ autojoin:
         - "#zgphp"
 
 meetup:
-    api_key: <meetup.com api key>
+    api_key:
+    group_id:
+
+twitter:
+        consumer_key:
+        consumer_secret:
+        access_token:
+        access_token_secret:
+
+        channel: "#zgphp"
+        delay: 60
+        query: "#zgphp OR @zgphp"

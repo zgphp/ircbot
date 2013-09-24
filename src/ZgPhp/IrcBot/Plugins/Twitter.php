@@ -25,6 +25,8 @@ use ZgPhp\IrcBot\Event;
  */
 class Twitter extends Plugin
 {
+    const DEFAULT_DELAY = 60;
+
     /**
      * The twitter client lib.
      * @see https://github.com/dg/twitter-php
@@ -58,69 +60,76 @@ class Twitter extends Plugin
         $consumerSecret = $this->getSetting(array('twitter', 'consumer_secret'));
         $accessToken = $this->getSetting(array('twitter', 'access_token'));
         $accessTokenSecret = $this->getSetting(array('twitter', 'access_token_secret'));
-
         $this->channel = $this->getSetting(array('twitter', 'channel'));
-        $this->delay = $this->getSetting(array('twitter', 'delay'), true, 60);
+        $this->delay = $this->getSetting(array('twitter', 'delay'), true, self::DEFAULT_DELAY);
         $this->query = $this->getSetting(array('twitter', 'query'));
 
         $this->twitter = new \Twitter($consumerKey, $consumerSecret, $accessToken, $accessTokenSecret);
 
-        // Get the last mention and remember it's id
-        $data = $this->twitter->request('statuses/mentions_timeline', 'GET', array('count' => 1));
-        if (!empty($data)) {
-            $mention = $data[0];
-            $this->sinceID = $mention->id_str;
-        }
+        // Get the most recent tweet's ID
+        $data = $this->searchTweets();
+        $this->sinceID = $data->search_metadata->max_id_str;
     }
 
     /** Activate after MOTD has been recieved. */
     public function onEndMotd(Event $event)
     {
-        $this->log->debug("Twitter plugin: setting up periodic timer with delay of $this->delay seconds.");
+        $this->log->debug("Twitter plugin: setting up periodic timer with delay of $this->delay seconds.\n");
 
-        // Save the write stream so the plugin can write on demand
+        // Save the write stream so the plugin can write on demand.
+        // Not the most elegant solution, but best I could come up with.
         $this->write = $event->write;
 
         $loop = $this->getClient()->getLoop();
-        $loop->addPeriodicTimer($this->delay, array($this, 'findMentions'));
+        $loop->addPeriodicTimer($this->delay, array($this, 'processTweets'));
     }
 
-    public function findMentions()
+    /**
+     * Loads recent tweets which match the query and posts them to the
+     * IRC channel.
+     */
+    public function processTweets()
     {
-        $args = array(
-            'q' => $this->query,
-            'since_id' => $this->sinceID,
-            'result_type' => 'recent', // return only the most recent results in the response
-            'count' => 1 // remove
-        );
-
-        $data = $this->twitter->request('search/tweets', 'GET', $args);
-        if (empty($data)) {
-            return;
-        }
+        $data = $this->searchTweets();
 
         $count = count($data->statuses);
         if ($count > 0) {
             $this->log->debug("Twitter plugin: Found $count mentions.\n");
         }
 
-        foreach($data->statuses as $status) {
-            $id = $status->id_str;
-            $text = $status->text;
-            $user = $status->user->screen_name;
+        foreach($data->statuses as $tweet) {
+            $text = $tweet->text;
+            $user = $tweet->user->screen_name;
+            $url = $this->getTweetURL($tweet);
 
             // Skip retweets
-            if(isset($status->retweeted_status)) {
+            if(isset($tweet->retweeted_status)) {
                 continue;
             }
 
-            $url = "https://twitter.com/$user/status/$id";
             $text = "@$user tweeted: $text .::. $url";
-
-            // $write = $this->getClient()->getWriteStream();
             $this->write->ircPrivMsg($this->channel, $text);
         }
 
         $this->sinceID = $data->search_metadata->max_id_str;
+    }
+
+    /** Loads tweets matching the query since the last processed tweet. */
+    public function searchTweets()
+    {
+        $args = array(
+            'q' => $this->query,
+            'since_id' => $this->sinceID,
+            'result_type' => 'recent', // return only the most recent results in the response
+        );
+
+        return $this->twitter->request('search/tweets', 'GET', $args);
+    }
+
+    private function getTweetURL($tweet)
+    {
+        $id = $tweet->id_str;
+        $user = $tweet->user->screen_name;
+        return "https://twitter.com/$user/status/$id";
     }
 }

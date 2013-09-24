@@ -12,7 +12,8 @@
         }
     ],
     "require": {
-        "phergie/phergie-irc-client-react": "dev-master"
+        "phergie/phergie-irc-client-react": "dev-master",
+        "dg/twitter-php": "*"
     },
     "minimum-stability": "dev",
     "autoload": {

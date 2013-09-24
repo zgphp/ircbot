@@ -3,17 +3,21 @@
 namespace ZgPhp\IrcBot;
 
 use Monolog\Logger;
+use ZgPhp\IrcBot\Client;
 
 /** Base class for plugins. */
 class Plugin
 {
+    protected $client;
     protected $settings;
     protected $log;
 
-    public function __construct(array $settings, Logger $log)
+    public function __construct(Client $client, array $settings, Logger $log)
     {
+        $this->client = $client;
         $this->settings = $settings;
         $this->log = $log;
+
         $this->init();
     }
 
@@ -59,13 +63,13 @@ class Plugin
     }
 
     /** Returns the specified value from settings. */
-    protected function getSetting(array $path, $optional = false)
+    protected function getSetting(array $path, $optional = false, $default = null)
     {
         $settings = $this->settings;
         foreach($path as $item) {
             if (!isset($settings[$item])) {
                 if ($optional) {
-                    return null;
+                    return $default;
                 } else {
                     $logPath = implode('.', $path);
                     throw new \Exception("Required setting [$logPath] not found.");
@@ -76,5 +80,10 @@ class Plugin
         }
 
         return $settings;
+    }
+
+    protected function getClient()
+    {
+        return $this->client;
     }
 }

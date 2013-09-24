@@ -80,16 +80,15 @@ class Client
     {
         $this->log->info("Activating plugin: $class\n");
 
+        // Try default namespace
+        $class = __NAMESPACE__ . '\\Plugins\\' . $class;
+
         if (!class_exists($class)) {
-            // Try default namespace
-            $class = __NAMESPACE__ . '\\Plugins\\' . $class;
-            if (!class_exists($class)) {
-                $this->log->error("Cannot find plugin class [$class]. Skipping.\n");
-                return;
-            }
+            $this->log->error("Cannot find plugin class [$class]. Skipping.\n");
+            return;
         }
 
-        $plugin = new $class($this->settings, $this->log);
+        $plugin = new $class($this, $this->settings, $this->log);
 
         if (!($plugin instanceof Plugin)) {
             $this->log->error("Plugin class [$class] is not subclass of ZgPHP\\IrcBot\\Plugin. Skipping.\n");
@@ -103,10 +102,18 @@ class Client
     {
         $event = new Event($message, $write, $connection, $logger);
 
-        file_put_contents('log.txt', print_r($message, true), FILE_APPEND);
-
         foreach($this->plugins as $plugin) {
             $plugin->dispatch($event);
         }
+    }
+
+    public function getLoop()
+    {
+        return $this->client->getLoop();
+    }
+
+    public function getWriteStream()
+    {
+        return $this->client->getWriteStream();
     }
 }

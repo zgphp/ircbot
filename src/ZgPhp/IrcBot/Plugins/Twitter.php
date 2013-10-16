@@ -91,7 +91,13 @@ class Twitter extends Plugin
      */
     public function processTweets()
     {
-        $data = $this->searchTweets();
+        try {
+            $data = $this->searchTweets();
+        } catch (\Exception $ex) {
+            $msg = $ex->getMessage();
+            $this->log->warn("Twitter plugin: Failed fetching tweets. Error: $msg\n");
+            return;
+        }
 
         $count = count($data->statuses);
         if ($count > 0) {

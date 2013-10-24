@@ -3,20 +3,20 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "31d9b910f2608314a7312dd00711f565",
+    "hash": "5b1de351a4134ee9fe95d8fa164e00a0",
     "packages": [
         {
             "name": "dg/twitter-php",
-            "version": "dev-master",
+            "version": "v3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dg/twitter-php.git",
-                "reference": "b9ed44da6f2363b09d2f306deeaf5df94f786324"
+                "reference": "2425744d2cc93960f16b2e5739cd978df8defe59"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dg/twitter-php/zipball/b9ed44da6f2363b09d2f306deeaf5df94f786324",
-                "reference": "b9ed44da6f2363b09d2f306deeaf5df94f786324",
+                "url": "https://api.github.com/repos/dg/twitter-php/zipball/2425744d2cc93960f16b2e5739cd978df8defe59",
+                "reference": "2425744d2cc93960f16b2e5739cd978df8defe59",
                 "shasum": ""
             },
             "type": "library",
@@ -41,31 +41,26 @@
                 "oauth",
                 "twitter"
             ],
-            "time": "2013-09-12 18:21:15"
+            "time": "2013-03-06 19:10:39"
         },
         {
             "name": "evenement/evenement",
-            "version": "1.0.x-dev",
+            "version": "v1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/igorw/evenement.git",
-                "reference": "8b0918f8374327dfed4408fe467980ab41d556dd"
+                "reference": "fa966683e7df3e5dd5929d984a44abfbd6bafe8d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/igorw/evenement/zipball/8b0918f8374327dfed4408fe467980ab41d556dd",
-                "reference": "8b0918f8374327dfed4408fe467980ab41d556dd",
+                "url": "https://api.github.com/repos/igorw/evenement/zipball/fa966683e7df3e5dd5929d984a44abfbd6bafe8d",
+                "reference": "fa966683e7df3e5dd5929d984a44abfbd6bafe8d",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.0"
             },
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.0-dev"
-                }
-            },
             "autoload": {
                 "psr-0": {
                     "Evenement": "src"
@@ -86,20 +81,20 @@
             "keywords": [
                 "event-dispatcher"
             ],
-            "time": "2012-12-29 17:04:52"
+            "time": "2012-05-30 15:01:08"
         },
         {
             "name": "monolog/monolog",
-            "version": "dev-master",
+            "version": "1.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/monolog.git",
-                "reference": "65fb44410157839a012e9a9b8c11d38598484a0e"
+                "reference": "f72392d0e6eb855118f5a84e89ac2d257c704abd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/65fb44410157839a012e9a9b8c11d38598484a0e",
-                "reference": "65fb44410157839a012e9a9b8c11d38598484a0e",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/f72392d0e6eb855118f5a84e89ac2d257c704abd",
+                "reference": "f72392d0e6eb855118f5a84e89ac2d257c704abd",
                 "shasum": ""
             },
             "require": {
@@ -109,7 +104,6 @@
             "require-dev": {
                 "doctrine/couchdb": "dev-master",
                 "mlehner/gelf-php": "1.0.*",
-                "phpunit/phpunit": "~3.7.0",
                 "raven/raven": "0.5.*"
             },
             "suggest": {
@@ -149,30 +143,30 @@
                 "logging",
                 "psr-3"
             ],
-            "time": "2013-09-17 13:26:34"
+            "time": "2013-07-28 22:38:30"
         },
         {
             "name": "phergie/phergie-irc-client-react",
-            "version": "dev-master",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phergie/phergie-irc-client-react.git",
-                "reference": "3c89f5c8e3568dee8f88e1643b2bb7147ae26862"
+                "reference": "2c54bf980e9c597e2954037ca4990d5da9ea1155"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phergie/phergie-irc-client-react/zipball/3c89f5c8e3568dee8f88e1643b2bb7147ae26862",
-                "reference": "3c89f5c8e3568dee8f88e1643b2bb7147ae26862",
+                "url": "https://api.github.com/repos/phergie/phergie-irc-client-react/zipball/2c54bf980e9c597e2954037ca4990d5da9ea1155",
+                "reference": "2c54bf980e9c597e2954037ca4990d5da9ea1155",
                 "shasum": ""
             },
             "require": {
-                "monolog/monolog": "~1.2",
-                "phergie/phergie-irc-connection": "dev-master",
-                "phergie/phergie-irc-generator": "dev-master",
-                "phergie/phergie-irc-parser": "dev-master",
+                "monolog/monolog": "1.6.*",
+                "phergie/phergie-irc-connection": "1.1.*",
+                "phergie/phergie-irc-generator": "1.2.*",
+                "phergie/phergie-irc-parser": "1.3.*",
                 "php": ">=5.3.3",
-                "react/event-loop": "0.2.*",
-                "react/stream": "0.2.*"
+                "react/event-loop": "0.3.*",
+                "react/stream": "0.3.*"
             },
             "type": "library",
             "autoload": {
@@ -190,11 +184,11 @@
                 "irc",
                 "react"
             ],
-            "time": "2013-09-20 14:16:23"
+            "time": "2013-10-05 13:25:24"
         },
         {
             "name": "phergie/phergie-irc-connection",
-            "version": "dev-master",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phergie/phergie-irc-connection.git",
@@ -230,16 +224,16 @@
         },
         {
             "name": "phergie/phergie-irc-generator",
-            "version": "dev-master",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phergie/phergie-irc-generator.git",
-                "reference": "a2f45a9ffa4d319e6cef36bb238b5a3c3d397fc1"
+                "reference": "d03ec9998344caeb360956e62da6214e071b4b49"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phergie/phergie-irc-generator/zipball/a2f45a9ffa4d319e6cef36bb238b5a3c3d397fc1",
-                "reference": "a2f45a9ffa4d319e6cef36bb238b5a3c3d397fc1",
+                "url": "https://api.github.com/repos/phergie/phergie-irc-generator/zipball/d03ec9998344caeb360956e62da6214e071b4b49",
+                "reference": "d03ec9998344caeb360956e62da6214e071b4b49",
                 "shasum": ""
             },
             "require": {
@@ -260,20 +254,20 @@
                 "generator",
                 "irc"
             ],
-            "time": "2013-09-20 01:15:59"
+            "time": "2013-10-05 12:03:37"
         },
         {
             "name": "phergie/phergie-irc-parser",
-            "version": "dev-master",
+            "version": "1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phergie/phergie-irc-parser.git",
-                "reference": "a89e05e8a8ccea998d7b0169645ce6c4f6b5344d"
+                "reference": "9d9b7e596b78214b73c153a35c1e7498470c2d14"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phergie/phergie-irc-parser/zipball/a89e05e8a8ccea998d7b0169645ce6c4f6b5344d",
-                "reference": "a89e05e8a8ccea998d7b0169645ce6c4f6b5344d",
+                "url": "https://api.github.com/repos/phergie/phergie-irc-parser/zipball/9d9b7e596b78214b73c153a35c1e7498470c2d14",
+                "reference": "9d9b7e596b78214b73c153a35c1e7498470c2d14",
                 "shasum": ""
             },
             "require": {
@@ -294,7 +288,7 @@
                 "irc",
                 "parser"
             ],
-            "time": "2013-09-20 00:50:19"
+            "time": "2013-10-05 11:55:30"
         },
         {
             "name": "psr/log",
@@ -336,17 +330,17 @@
         },
         {
             "name": "react/event-loop",
-            "version": "v0.2.7",
+            "version": "v0.3.3",
             "target-dir": "React/EventLoop",
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/event-loop.git",
-                "reference": "bf8f09df7d8abb4a481771e64716c94178b13904"
+                "reference": "49208fa3a15c9eae4adf8351ee9caa4064fe550d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/event-loop/zipball/bf8f09df7d8abb4a481771e64716c94178b13904",
-                "reference": "bf8f09df7d8abb4a481771e64716c94178b13904",
+                "url": "https://api.github.com/repos/reactphp/event-loop/zipball/49208fa3a15c9eae4adf8351ee9caa4064fe550d",
+                "reference": "49208fa3a15c9eae4adf8351ee9caa4064fe550d",
                 "shasum": ""
             },
             "require": {
@@ -359,7 +353,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "0.2-dev"
+                    "dev-master": "0.3-dev"
                 }
             },
             "autoload": {
@@ -375,21 +369,21 @@
             "keywords": [
                 "event-loop"
             ],
-            "time": "2013-01-05 11:41:26"
+            "time": "2013-07-08 22:38:22"
         },
         {
             "name": "react/stream",
-            "version": "v0.2.7",
+            "version": "v0.3.3",
             "target-dir": "React/Stream",
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/stream.git",
-                "reference": "98cb36bc8c4d6111c584d63f680e886b2167bee5"
+                "reference": "b72900ab00513b591fb101faecad38f9c8eab8da"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/stream/zipball/98cb36bc8c4d6111c584d63f680e886b2167bee5",
-                "reference": "98cb36bc8c4d6111c584d63f680e886b2167bee5",
+                "url": "https://api.github.com/repos/reactphp/stream/zipball/b72900ab00513b591fb101faecad38f9c8eab8da",
+                "reference": "b72900ab00513b591fb101faecad38f9c8eab8da",
                 "shasum": ""
             },
             "require": {
@@ -397,13 +391,13 @@
                 "php": ">=5.3.3"
             },
             "suggest": {
-                "react/event-loop": "0.2.*",
-                "react/promise": "1.0.*"
+                "react/event-loop": "0.3.*",
+                "react/promise": "~1.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "0.2-dev"
+                    "dev-master": "0.3-dev"
                 }
             },
             "autoload": {
@@ -420,7 +414,7 @@
                 "pipe",
                 "stream"
             ],
-            "time": "2012-12-14 00:58:14"
+            "time": "2013-07-09 00:44:12"
         }
     ],
     "packages-dev": [
@@ -429,10 +423,10 @@
     "aliases": [
 
     ],
-    "minimum-stability": "dev",
-    "stability-flags": {
-        "phergie/phergie-irc-client-react": 20
-    },
+    "minimum-stability": "stable",
+    "stability-flags": [
+
+    ],
     "platform": [
 
     ],

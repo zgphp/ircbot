@@ -82,6 +82,11 @@ class Client
     protected function setupBindings()
     {
         $this->client->on('irc.received', array($this, 'handleReceived'));
+
+        $this->client->on('connect.error', function($message, $connection, $logger) {
+            $logger->debug('Connection to ' . $connection->getServerHostname() . ' lost, attempting to reconnect');
+            $this->client->addConnection($connection);
+        });
     }
 
     protected function setupPlugins()

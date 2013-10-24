@@ -2,26 +2,36 @@
 <?php
 
 // Installed via composer
-$autoload = __DIR__ . '/../../../autoload.php';
-if (file_exists($autoload)) {
-    include $autoload;
-}
+$autoload1 = __DIR__ . '/../../../autoload.php';
 
 // Installed from source
-$autoload = __DIR__ . '/../vendor/autoload.php';
-if (file_exists($autoload)) {
-    include $autoload;
+$autoload2 = __DIR__ . '/../vendor/autoload.php';
+
+if (file_exists($autoload1)) {
+    include $autoload1;
+} elseif (file_exists($autoload2)) {
+    include $autoload2;
+} else {
+    die("Unable to find vendor/autoload.php. Did you run 'composer install'?");
 }
 
-$settingsFile = __DIR__ . '/../settings.yml';
+// Load settings file
+$settingsDir = realpath(__DIR__ . '/../');
+$settingsFile = $settingsDir . DIRECTORY_SEPARATOR . 'settings.yml';
+
 if (!file_exists($settingsFile)) {
-    throw new Exception("settings.yml file not found.");
+    die("Settings file not found at [$settingsFile].");
 }
 
-$settings = yaml_parse_file($settingsFile);
-if ($settings === false) {
-    throw new Exception("Failed parsing settings.yml");
+$settingsData = file_get_contents($settingsFile);
+if ($settingsData === false) {
+    die("Failed loading settings.yml");
 }
 
+// Parse yaml
+$parser = new Symfony\Component\Yaml\Parser();
+$settings = $parser->parse($settingsData);
+
+// Create and run client
 $client = new ZgPhp\IrcBot\Client($settings);
 $client->run();

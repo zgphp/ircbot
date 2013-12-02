@@ -14,7 +14,8 @@
     "require": {
         "phergie/phergie-irc-client-react": "1.*",
         "symfony/yaml": "2.*",
-        "dg/twitter-php": "*"
+        "dg/twitter-php": "*",
+        "react/http-client": "0.3.*"
     },
     "autoload": {
         "psr-0": {"ZgPhp\\IrcBot": "src/"}

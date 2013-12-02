@@ -7,9 +7,10 @@ realname: 'ZgPHP bot'
 
 plugins:
     - AutoJoin
-    - Weather
-    - PingPong
     - Meetup
+    - PingPong
+    - Weather
+    - WebChecker
 
 autojoin:
     channels:
@@ -20,11 +21,19 @@ meetup:
     group_id:
 
 twitter:
-        consumer_key:
-        consumer_secret:
-        access_token:
-        access_token_secret:
+    consumer_key:
+    consumer_secret:
+    access_token:
+    access_token_secret:
 
-        channel: "#zgphp"
-        delay: 60
-        query: "#zgphp OR @zgphp"
+    channel: "#zgphp"
+    delay: 60
+    query: "#zgphp OR @zgphp"
+
+webchecker:
+    channel: "#zgphp"
+    check_delay: 60
+    resend_delay: 1200
+    urls:
+        - http://zgphp.org/
+        - http://2013.zgphp.org/

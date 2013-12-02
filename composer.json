@@ -13,6 +13,7 @@
     ],
     "require": {
         "phergie/phergie-irc-client-react": "1.*",
+        "symfony/yaml": "2.*",
         "dg/twitter-php": "*"
     },
     "autoload": {

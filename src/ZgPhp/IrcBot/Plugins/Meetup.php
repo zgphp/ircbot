@@ -2,6 +2,8 @@
 
 namespace ZgPhp\IrcBot\Plugins;
 
+use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
+
 use ZgPhp\IrcBot\Event;
 use ZgPhp\IrcBot\MessagePatternPlugin;
 
@@ -29,10 +31,19 @@ class Meetup extends MessagePatternPlugin
     /** The meetup.com group ID for which to fetch data. */
     private $groupID;
 
-    protected function init()
+    public function addConfig(ArrayNodeDefinition $node)
     {
-        $this->apiKey = $this->getSetting(array('meetup', 'api_key'));
-        $this->groupID = $this->getSetting(array('meetup', 'group_id'));
+        $node->children()
+            ->scalarNode("api_key")
+                ->isRequired()->cannotBeEmpty()->end()
+            ->scalarNode("group_id")
+                ->isRequired()->cannotBeEmpty()->end();
+    }
+
+    public function configure(array $settings = null)
+    {
+        $this->apiKey = $settings['api_key'];
+        $this->groupID = $settings['group_id'];
     }
 
     protected function handle(Event $event, $matches)

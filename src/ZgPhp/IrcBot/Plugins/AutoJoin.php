@@ -2,6 +2,8 @@
 
 namespace ZgPhp\IrcBot\Plugins;
 
+use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
+
 use ZgPhp\IrcBot\Plugin;
 use ZgPhp\IrcBot\Event;
 
@@ -24,13 +26,16 @@ class AutoJoin extends Plugin
 {
     private $channels;
 
-    protected function init()
+    public function addConfig(ArrayNodeDefinition $node)
     {
-        $this->channels = $this->getSetting(array('autojoin', 'channels'));
+        $node->children()
+            ->arrayNode("channels")
+                ->prototype("scalar");
+    }
 
-        if (is_string($this->channels)) {
-            $this->channels = array($this->channels);
-        }
+    public function configure(array $settings = null)
+    {
+        $this->channels = $settings['channels'];
     }
 
     public function onEndMotd(Event $event)

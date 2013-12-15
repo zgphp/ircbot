@@ -5,6 +5,9 @@ namespace ZgPhp\IrcBot;
 use Phergie\Irc\Client\React\Client as PhergieClient;
 use Phergie\Irc\Connection;
 
+use Symfony\Component\Config\Definition\Builder\TreeBuilder;
+use Symfony\Component\Config\Definition\Processor;
+
 class Client
 {
     /**
@@ -33,12 +36,13 @@ class Client
 
     public function __construct($settings)
     {
-        $this->settings = $settings;
         $this->client = new PhergieClient();
-        $this->connection = $this->createConnection($settings);
         $this->log = $this->client->getLogger();
 
-        $this->setupPlugins();
+        $this->settings = $this->configure($settings);
+        $this->connection = $this->createConnection();
+
+        $this->configurePlugins();
         $this->setupBindings();
     }
 
@@ -47,34 +51,80 @@ class Client
         $this->client->run($this->connection);
     }
 
+    private function configure($settings)
+    {
+        $treeBuilder = new TreeBuilder();
+        $rootNode = $treeBuilder->root('settings');
+
+        // Define client configuration values
+        $rootNode->children()
+            ->scalarNode('server_host')
+                ->isRequired()->cannotBeEmpty()->end()
+            ->integerNode('server_port')
+                ->cannotBeEmpty()->defaultValue(6667)->end()
+            ->scalarNode('nickname')
+                ->isRequired()->cannotBeEmpty()->end()
+            ->scalarNode('realname')
+                ->defaultValue("")->end()
+            ->scalarNode('username')
+                ->isRequired()->cannotBeEmpty()->end()
+            ->scalarNode('password')
+                ->defaultValue("")->end();
+
+        // Add plugin configuration values to tree
+        if (isset($settings['plugins'])) {
+            $pluginsNode = $rootNode->children()->arrayNode('plugins');
+
+            foreach(array_keys($settings['plugins']) as $name) {
+                $pluginNode = $pluginsNode->children()->arrayNode($name);
+                $plugin = $this->getPluginInstance($name);
+                $plugin->addConfig($pluginNode);
+
+                $this->plugins[$name] = $plugin;
+            }
+        }
+
+        // Process and validate the configuration
+        $tree = $treeBuilder->buildTree();
+        $proc = new Processor();
+        return $proc->process($tree, [$settings]);
+    }
+
+    private function configurePlugins()
+    {
+        foreach ($this->plugins as $name => $plugin) {
+            $config = $this->settings['plugins'][$name];
+            $plugin->configure($config);
+        }
+    }
+
+    private function getPluginInstance($name)
+    {
+        // Change name to camel case to form plugin class name
+        $className = str_replace('_', ' ', $name);
+        $className = ucwords($className);
+        $className = str_replace(' ', '', $className);
+
+        // Add namespace
+        $className = __NAMESPACE__ . "\\Plugins\\" . $className;
+
+        if (!class_exists($className)) {
+            throw new \Exception("Plugin class not found: $className");
+        }
+
+        return new $className($this, $this->log);
+    }
+
     /** Creates a Connection object from data in settings. */
-    protected function createConnection($settings)
+    protected function createConnection()
     {
         $connection = new Connection();
-
-        if (isset($settings['server_host'])) {
-            $connection->setServerHostname($settings['server_host']);
-        }
-
-        if (isset($settings['server_port'])) {
-            $connection->setServerPort($settings['server_port']);
-        }
-
-        if (isset($settings['nickname'])) {
-            $connection->setNickname($settings['nickname']);
-        }
-
-        if (isset($settings['realname'])) {
-            $connection->setRealname($settings['realname']);;
-        }
-
-        if (isset($settings['username'])) {
-            $connection->setUsername($settings['username']);
-        }
-
-        if (isset($settings['password'])) {
-            $connection->setPassword($settings['password']);
-        }
+        $connection->setServerHostname($this->settings['server_host']);
+        $connection->setServerPort($this->settings['server_port']);
+        $connection->setNickname($this->settings['nickname']);
+        $connection->setRealname($this->settings['realname']);;
+        $connection->setUsername($this->settings['username']);
+        $connection->setPassword($this->settings['password']);
 
         return $connection;
     }
@@ -83,43 +133,13 @@ class Client
     {
         $this->client->on('irc.received', array($this, 'handleReceived'));
 
+        // Reconnect on failed connection
         $this->client->on('connect.error', function($message, $connection, $logger) {
-            $logger->debug('Connection to ' . $connection->getServerHostname() . ' lost, attempting to reconnect');
+            echo($message);
+            $host = $connection->getServerHostname();
+            $logger->debug("Connection to $host lost, attempting to reconnect\n");
             $this->client->addConnection($connection);
         });
-    }
-
-    protected function setupPlugins()
-    {
-        if (empty($this->settings['plugins'])) {
-            return;
-        }
-
-        foreach($this->settings['plugins'] as $key => $class) {
-            $this->setupPlugin($class);
-        }
-    }
-
-    protected function setupPlugin($class)
-    {
-        $this->log->info("Activating plugin: $class\n");
-
-        // Try default namespace
-        $class = __NAMESPACE__ . '\\Plugins\\' . $class;
-
-        if (!class_exists($class)) {
-            $this->log->error("Cannot find plugin class [$class]. Skipping.\n");
-            return;
-        }
-
-        $plugin = new $class($this, $this->settings, $this->log);
-
-        if (!($plugin instanceof Plugin)) {
-            $this->log->error("Plugin class [$class] is not subclass of ZgPHP\\IrcBot\\Plugin. Skipping.\n");
-            return;
-        }
-
-        $this->plugins[] = $plugin;
     }
 
     public function handleReceived($message, $write, $connection, $logger)

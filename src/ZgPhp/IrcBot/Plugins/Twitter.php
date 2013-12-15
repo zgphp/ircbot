@@ -2,6 +2,8 @@
 
 namespace ZgPhp\IrcBot\Plugins;
 
+use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
+
 use ZgPhp\IrcBot\Plugin;
 use ZgPhp\IrcBot\Event;
 
@@ -25,8 +27,6 @@ use ZgPhp\IrcBot\Event;
  */
 class Twitter extends Plugin
 {
-    const DEFAULT_DELAY = 60;
-
     /**
      * The twitter client lib.
      * @see https://github.com/dg/twitter-php
@@ -54,18 +54,39 @@ class Twitter extends Plugin
      */
     private $write;
 
-    protected function init()
+    public function addConfig(ArrayNodeDefinition $node)
     {
-        $this->channel = $this->getSetting(array('twitter', 'channel'));
-        $this->delay = $this->getSetting(array('twitter', 'delay'), true, self::DEFAULT_DELAY);
-        $this->query = $this->getSetting(array('twitter', 'query'));
+        $node->children()
+            ->scalarNode("channel")
+                ->isRequired()->cannotBeEmpty()->end()
+            ->integerNode("delay")
+                ->cannotBeEmpty()->defaultValue(60)->end()
+            ->scalarNode("query")
+                ->isRequired()->cannotBeEmpty()->end()
 
-        $consumerKey = $this->getSetting(array('twitter', 'consumer_key'));
-        $consumerSecret = $this->getSetting(array('twitter', 'consumer_secret'));
-        $accessToken = $this->getSetting(array('twitter', 'access_token'));
-        $accessTokenSecret = $this->getSetting(array('twitter', 'access_token_secret'));
+            ->scalarNode("consumer_key")
+                ->isRequired()->cannotBeEmpty()->end()
+            ->scalarNode("consumer_secret")
+                ->isRequired()->cannotBeEmpty()->end()
+            ->scalarNode("access_token")
+                ->isRequired()->cannotBeEmpty()->end()
+            ->scalarNode("access_token_secret")
+                ->isRequired()->cannotBeEmpty()->end()
+        ;
+    }
 
-        $this->twitter = new \Twitter($consumerKey, $consumerSecret, $accessToken, $accessTokenSecret);
+    public function configure(array $settings = null)
+    {
+        $this->channel = $settings['channel'];
+        $this->delay = $settings['delay'];
+        $this->query = $settings['query'];
+
+        $this->twitter = new \Twitter(
+            $settings['consumer_key'],
+            $settings['consumer_secret'],
+            $settings['access_token'],
+            $settings['access_token_secret']
+        );
 
         // Get the most recent tweet's ID
         $data = $this->searchTweets();

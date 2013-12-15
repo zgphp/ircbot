@@ -12,10 +12,11 @@
         }
     ],
     "require": {
-        "phergie/phergie-irc-client-react": "1.*",
-        "symfony/yaml": "2.*",
         "dg/twitter-php": "*",
-        "react/http-client": "0.3.*"
+        "phergie/phergie-irc-client-react": "1.*",
+        "react/http-client": "0.3.*",
+        "symfony/config": "2.4.*",
+        "symfony/yaml": "2.*"
     },
     "autoload": {
         "psr-0": {"ZgPhp\\IrcBot": "src/"}

@@ -41,7 +41,7 @@ class Bartender extends MessagePatternPlugin
         "Crna Kraljica",
         "Mrki Medvjed",
         "Dva Klasa",
-        "Grička Vjestica",
+        "Gricka Vjestica",
     );
 
     protected function handle(Event $event, $matches)

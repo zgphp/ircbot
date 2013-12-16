@@ -2,14 +2,22 @@
 
 namespace ZgPhp\IrcBot;
 
+use Monolog\Logger;
+
+use Evenement\EventEmitterTrait;
+
 use Phergie\Irc\Client\React\Client as PhergieClient;
+use Phergie\Irc\Client\React\WriteStream;
 use Phergie\Irc\Connection;
+use Phergie\Irc\ConnectionInterface;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\Processor;
 
 class Client
 {
+    use EventEmitterTrait;
+
     /**
      * The Phergie IRC client.
      * @var Phergie\Irc\Client\React\Client
@@ -46,6 +54,7 @@ class Client
         $this->setupBindings();
     }
 
+    /** Connects to server. */
     public function run()
     {
         $this->client->run($this->connection);
@@ -131,23 +140,38 @@ class Client
 
     protected function setupBindings()
     {
+        // Emit
         $this->client->on('irc.received', array($this, 'handleReceived'));
 
         // Reconnect on failed connection
         $this->client->on('connect.error', function($message, $connection, $logger) {
-            echo($message);
             $host = $connection->getServerHostname();
             $logger->debug("Connection to $host lost, attempting to reconnect\n");
             $this->client->addConnection($connection);
         });
     }
 
-    public function handleReceived($message, $write, $connection, $logger)
-    {
-        $event = new Event($message, $write, $connection, $logger);
+    /** Maps IRC commands to events to be emitted. */
+    private $commandMap = array(
+        "PING"    => "ircbot.ping",
+        376       => "ircbot.endofmotd", // RPL_ENDOFMOTD
+        422       => "ircbot.endofmotd", // ERR_NOMOTD
+        "PRIVMSG" => "ircbot.privmsg"
+    );
 
-        foreach($this->plugins as $plugin) {
-            $plugin->dispatch($event);
+    /**
+     * Handler for "irc.recieved".
+     */
+    public function handleReceived(array $message, WriteStream $write, ConnectionInterface $connection, Logger $logger)
+    {
+        if (isset($message['command'])) {
+            $cmd = $message['command'];
+            if (isset($this->commandMap[$cmd])) {
+                $event = new Event($message, $write, $connection, $logger)
+                $eventID = $this->commandMap[$cmd];
+
+                $this->emit($eventID, $event);
+            }
         }
     }
 

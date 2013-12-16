@@ -11,14 +11,16 @@ abstract class MessagePatternPlugin extends Plugin
     /** The pattern to match against. */
     protected $pattern;
 
-    /** Parse priv messages an look for those matching the pattern. */
-    public function onPrivMsg(Event $event)
+    /** Sets up the plugin with values from the config file. */
+    public function configure(array $settings = null)
     {
-        $text = $event->message['params']['text'];
-
-        if (preg_match($this->pattern, $text, $matches)) {
-            $this->handle($event, $matches);
-        }
+        $this->client->on("ircbot.privmsg", function($event) {
+            // Parse priv messages an look for those matching the pattern.
+            $text = $event->message['params']['text'];
+            if (preg_match($this->pattern, $text, $matches)) {
+               $this->handle($event, $matches);
+            }
+        });
     }
 
     /** Handler for messages which match the pattern. */

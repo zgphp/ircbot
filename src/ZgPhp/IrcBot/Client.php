@@ -4,7 +4,7 @@ namespace ZgPhp\IrcBot;
 
 use Monolog\Logger;
 
-use Evenement\EventEmitterTrait;
+use Evenement\EventEmitter;
 
 use Phergie\Irc\Client\React\Client as PhergieClient;
 use Phergie\Irc\Client\React\WriteStream;
@@ -14,10 +14,8 @@ use Phergie\Irc\ConnectionInterface;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\Processor;
 
-class Client
+class Client extends EventEmitter
 {
-    use EventEmitterTrait;
-
     /**
      * The Phergie IRC client.
      * @var Phergie\Irc\Client\React\Client
@@ -140,7 +138,6 @@ class Client
 
     protected function setupBindings()
     {
-        // Emit
         $this->client->on('irc.received', array($this, 'handleReceived'));
 
         // Reconnect on failed connection
@@ -167,10 +164,10 @@ class Client
         if (isset($message['command'])) {
             $cmd = $message['command'];
             if (isset($this->commandMap[$cmd])) {
-                $event = new Event($message, $write, $connection, $logger)
+                $event = new Event($message, $write, $connection, $logger);
                 $eventID = $this->commandMap[$cmd];
 
-                $this->emit($eventID, $event);
+                $this->emit($eventID, array($event));
             }
         }
     }

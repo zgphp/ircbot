@@ -13,6 +13,7 @@
     ],
     "require": {
         "dg/twitter-php": "*",
+        "evenement/evenement": "1.0.*",
         "phergie/phergie-irc-client-react": "1.*",
         "react/http-client": "0.3.*",
         "symfony/config": "2.4.*",

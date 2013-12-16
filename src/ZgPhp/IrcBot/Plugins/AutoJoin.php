@@ -36,12 +36,12 @@ class AutoJoin extends Plugin
     public function configure(array $settings = null)
     {
         $this->channels = $settings['channels'];
-    }
 
-    public function onEndMotd(Event $event)
-    {
-        foreach($this->channels as $channel) {
-            $event->write->ircJoin($channel);
-        }
+        // After MOTD join channels
+        $this->client->on("ircbot.endofmotd", function($event) {
+            foreach($this->channels as $channel) {
+                $event->write->ircJoin($channel);
+            }
+        });
     }
 }

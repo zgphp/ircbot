@@ -104,6 +104,19 @@ class Weather extends MessagePatternPlugin
         return $data;
     }
 
+    /** List of wind directions. */
+    private $directions = array(
+        'northernly',
+        'northeasterly',
+        'easterly',
+        'southeasterly',
+        'southerly',
+        'southwesterly',
+        'westerly',
+        'northwesterly',
+        'northerly',
+    );
+
     /**
      * Parses wind data into english.
      *
@@ -116,25 +129,9 @@ class Weather extends MessagePatternPlugin
             return "ERROR: invalid wind direction (deg=$wind->deg)";
         }
 
-        // Map degree to geographic direction
-        $dirMap = array(
-            22.5 => 'northerly',
-            67.5 => 'northeasterly',
-            112.5 => 'easterly',
-            157.5 => 'southeasterly',
-            202.5 => 'southerly',
-            247.5 => 'southwesterly',
-            292.5 => 'westerly',
-            337.5 => 'northwesterly',
-            360 => 'northerly',
-        );
+        $id = ciel(($wind->deg - 22.5) / 45);
+        $direction = $this->directions[$id];
 
-        foreach($dirMap as $degLimit => $direction) {
-            if ($wind->deg < $degLimit) {
-                break;
-            }
-        }
-
-        return "{$wind->speed}mph $direction";
+        return "{$wind->nspeed}mph $direction";
     }
 }
